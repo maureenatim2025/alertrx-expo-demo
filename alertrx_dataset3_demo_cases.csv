@@ -1,0 +1,9 @@
+patient_id,delivery_signal,neonate_signal,neonate_treatment
+D001,Prolonged rupture of membranes,Fever at 36 hours,Ampicillin + Gentamicin
+D002,Maternal antibiotic prophylaxis incomplete,Stable vitals,Observation
+D003,GBS colonization positive,Respiratory distress,Ampicillin + Gentamicin + Vancomycin
+D004,Emergency cesarean for fetal distress,Mild tachycardia,Ampicillin + Gentamicin
+D005,Vaginal delivery with meconium,Meconium-stained fluid,Observation with monitoring
+D006,Maternal fever 39.1°C,Septic appearance,Ampicillin + Gentamicin + Cefotaxime
+D007,Labor induction for post-term,Jitteriness and irritability,Ampicillin + Gentamicin
+D008,Maternal diabetes with chorioamnionitis,Hypoglycemia at birth,Observation with monitoring
