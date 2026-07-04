@@ -115,7 +115,7 @@ export default async function ProviderDashboardPage() {
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-gray-900">{alert.description}</p>
                     <p className="text-xs text-gray-600 capitalize mt-1">
-                      {alert.type.replace(/_/g, " ")} • Patient: {alert.patientName ?? "Unknown"}
+                      {String(alert.type ?? "alert").replace(/_/g, " ")} • Patient: {"patientName" in alert && typeof alert.patientName === "string" ? alert.patientName : "Unknown"}
                     </p>
                   </div>
                   {alert.createdAt && (

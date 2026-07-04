@@ -22,6 +22,7 @@ import {
 import { format } from "date-fns";
 import { ArrowLeft, FileText, Pill, Bell, User, Activity, HeartPulse, CalendarCheck, ShieldAlert, ClipboardList } from "lucide-react";
 import { PatientAiPanel } from "@/components/provider/patient-ai-panel";
+import { buildClinicianReviewSnapshot } from "@/lib/utils/clinician-review";
 
 export const metadata: Metadata = { title: "Patient Details" };
 
@@ -49,6 +50,12 @@ export default async function PatientDetailPage({ params }: PageProps) {
   const patient = summaryResult;
   const medications = medsResult.data ?? [];
   const active = medications.filter((m) => m.status === "active");
+  const clinicianReview = buildClinicianReviewSnapshot({
+    adherenceScore: patient.adherenceScore,
+    unresolvedAlerts: patient.unresolvedAlerts,
+    preConsultationSignals: patient.preConsultationSignals,
+    recentAlerts: patient.recentAlerts,
+  });
 
   return (
     <div className="max-w-4xl space-y-6">
@@ -102,6 +109,32 @@ export default async function PatientDetailPage({ params }: PageProps) {
           </Card>
         </div>
       </div>
+
+      <Card className="border-l-4 border-l-primary/70">
+        <CardContent className="pt-5 space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs text-muted-foreground">Clinician review</p>
+              <p className="text-sm font-semibold capitalize">{clinicianReview.title}</p>
+            </div>
+            <Badge
+              variant={clinicianReview.severity === "high" ? "destructive" : clinicianReview.severity === "moderate" ? "secondary" : "outline"}
+              className="capitalize"
+            >
+              {clinicianReview.severity}
+            </Badge>
+          </div>
+          <p className="text-sm text-muted-foreground">{clinicianReview.summary}</p>
+          <p className="text-sm text-foreground">{clinicianReview.nextAction}</p>
+          <div className="flex flex-wrap gap-2">
+            {clinicianReview.signals.map((signal) => (
+              <Badge key={signal} variant="outline" className="text-xs">
+                {signal}
+              </Badge>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid gap-4 sm:grid-cols-3">
         <Card>

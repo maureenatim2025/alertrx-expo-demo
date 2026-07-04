@@ -218,6 +218,11 @@ export function PatientAiPanel({ patient, medications }: PatientAiPanelProps) {
   }
 
   const { drugName, confidence, distribution } = getTopRecommendation(classification);
+  const suggestedPrompts = [
+    "Explain the resistance risk in simple terms.",
+    "What treatment rationale should I mention to the caregiver?",
+    "Suggest the next step for this patient case.",
+  ];
 
   return (
     <div className="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
@@ -300,6 +305,18 @@ export function PatientAiPanel({ patient, medications }: PatientAiPanelProps) {
             <div className="mb-3 flex items-center gap-2 text-sm text-muted-foreground">
               <Sparkles className="h-4 w-4 text-primary" />
               Patient context is included with every message.
+            </div>
+            <div className="mb-3 flex flex-wrap gap-2">
+              {suggestedPrompts.map((prompt) => (
+                <button
+                  key={prompt}
+                  type="button"
+                  onClick={() => setDraft(prompt)}
+                  className="rounded-full border border-primary/20 bg-background px-3 py-1.5 text-xs text-primary transition hover:border-primary/40 hover:bg-primary/5"
+                >
+                  {prompt}
+                </button>
+              ))}
             </div>
             <div className="space-y-2">
               {messages.length === 0 && !chatError && (
