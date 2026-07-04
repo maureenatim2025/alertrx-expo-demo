@@ -51,5 +51,25 @@ env/
 .DS_Store
 Thumbs.db
 
+# Project artifacts and demo folders
+Alert Expo Demo/
+AlertRx-main (1).zip
+"AlertRx-main (1)/"
+Final Alert Drug Resistance Demo expo/
+Real ALertDRugRx Demo Grace/
+alertdrugrx/
+The AlertDRugRx Demo for expo/
+AlertDRugRx Demo Expo Grandfinally/
+ALertDrugRx Folder Real/
+
+# Node / Next.js artifacts
+node_modules/
+.next/
+out/
+coverage/
+.env
+.env.local
+.env.*.local
+
 # Logs
 *.log

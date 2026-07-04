@@ -1,0 +1,244 @@
+# AlertRx
+
+**AlertRx** is a medication adherence and prescription safety platform built with Next.js 15, TypeScript, MongoDB, and Tailwind CSS. It supports four distinct user roles — **Patient**, **Provider**, **Pharmacist**, and **Admin** — each with their own dashboards and functionality.
+
+---
+
+## Features
+
+| Role | Capabilities |
+|------|-------------|
+| **Patient** | Track medications, log adherence, view AI-generated safety alerts, upload prescriptions, view profile |
+| **Provider** | Search patients, write prescriptions with real-time interaction checks, review patient history, resolve alerts |
+| **Pharmacist** | Search patients, log dispense records, flag reviews, track dispensing history |
+| **Admin** | Manage all users, manage facilities, review and resolve all platform alerts |
+
+---
+
+## Tech Stack
+
+- **Framework:** Next.js 15 (App Router, Server Components, Server Actions)
+- **Language:** TypeScript (strict mode)
+- **Database:** MongoDB 7 + Mongoose 8
+- **Auth:** NextAuth v5 (JWT strategy, Credentials provider)
+- **UI:** Tailwind CSS 3.4 + shadcn/ui (Radix UI primitives)
+- **File uploads:** Cloudinary v2
+- **Validation:** Zod + React Hook Form
+- **Notifications:** Sonner toasts
+
+---
+
+## Prerequisites
+
+- Node.js 18+
+- A running MongoDB instance (local or [MongoDB Atlas](https://cloud.mongodb.com))
+- A [Cloudinary](https://cloudinary.com) account (free tier is fine)
+
+---
+
+## Setup
+
+### 1. Clone and install
+
+```bash
+git clone <repo-url>
+cd AlertRx
+npm install
+```
+
+### 2. Configure environment variables
+
+Copy the example env file and fill in your values:
+
+```bash
+cp .env.example .env.local
+```
+
+Open `.env.local` and set:
+
+```env
+# MongoDB connection string (include the DB name, e.g. alertrx)
+MONGODB_URI=mongodb://localhost:27017/alertrx
+
+# Auth.js / NextAuth — generate a secret with: openssl rand -base64 32
+AUTH_SECRET=your-secret-here
+NEXTAUTH_URL=http://localhost:3000
+
+# Cloudinary — from your Cloudinary dashboard
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
+```
+
+### 3. Seed the database (optional)
+
+Populate the database with demo data:
+
+```bash
+npm run seed
+```
+
+This creates the following demo accounts (all with password `Password123!`):
+
+| Role | Email / Phone |
+|------|--------------|
+| Admin | `admin@alertrx.dev` |
+| Provider | `sarah.okonkwo@alertrx.dev` |
+| Provider | `james.adeyemi@alertrx.dev` |
+| Pharmacist | `ngozi.eze@alertrx.dev` |
+| Patient | `+2348044444444` (Amina Bello) |
+| Patient | `+2348055555555` (Chukwuemeka Obi) |
+| Patient | `+2348066666666` (Fatima Aliyu) |
+
+The seed also creates 2 facilities, medications for each patient, 7-day adherence logs at ~80% adherence, 1 prescription, 3 alerts, and 1 dispense record.
+
+### 4. Start development server
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000).
+
+---
+
+## Deploy To Netlify
+
+This project is configured for SSR deployment on Netlify via the Next.js runtime plugin.
+
+### 1. Push this repo to GitHub
+
+Netlify should build from your default branch.
+
+### 2. Create a new Netlify site from Git
+
+Use these settings:
+
+- Build command: `npm run build`
+- Publish directory: `.next`
+
+These are also already defined in [netlify.toml](netlify.toml).
+
+### 3. Set environment variables in Netlify
+
+In Site settings -> Environment variables, add:
+
+- `MONGODB_URI`
+- `AUTH_SECRET`
+- `NEXTAUTH_URL` (set to your Netlify site URL, e.g. `https://your-site.netlify.app`)
+- `CLOUDINARY_CLOUD_NAME`
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET`
+- `NEXT_PUBLIC_APP_URL` (same as your public site URL)
+
+### 4. Deploy
+
+Trigger deploy from Netlify UI (or push a commit). After deploy, verify:
+
+- Login works (cookies/session)
+- Dashboard data loads from MongoDB
+- File uploads to Cloudinary succeed
+
+### Notes
+
+- Node version is pinned via [.nvmrc](.nvmrc) and `NODE_VERSION` in [netlify.toml](netlify.toml).
+- If you use seeded demo users in production-like environments, rotate credentials immediately.
+
+---
+
+## Scripts
+
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Start development server (Turbopack) |
+| `npm run build` | Build for production |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint |
+| `npm run seed` | Seed demo data into MongoDB |
+
+---
+
+## Project Structure
+
+```
+AlertRx/
+├── app/
+│   ├── (auth)/               # Login, signup, onboarding pages
+│   ├── (dashboard)/          # Protected dashboard pages (all roles)
+│   │   ├── dashboard/        # Role-specific dashboards
+│   │   ├── medications/      # Patient medication management
+│   │   ├── adherence/        # Patient adherence tracking
+│   │   ├── uploads/          # File uploads
+│   │   ├── profile/          # User profile
+│   │   ├── provider/         # Provider-specific pages
+│   │   ├── pharmacist/       # Pharmacist-specific pages
+│   │   └── admin/            # Admin pages
+│   └── api/                  # API routes (auth, uploads, patient search)
+├── actions/                  # Next.js Server Actions
+├── components/
+│   ├── auth/                 # Login/signup/onboarding forms
+│   ├── patient/              # Medication cards, adherence checklist
+│   ├── provider/             # Prescription form, patient search
+│   ├── pharmacist/           # Dispense form
+│   ├── admin/                # Users table
+│   ├── shared/               # Sidebar, header, metric cards, etc.
+│   └── ui/                   # shadcn/ui base components
+├── lib/
+│   ├── db/                   # MongoDB connection
+│   ├── services/             # Business logic services
+│   ├── types/                # TypeScript types
+│   ├── utils/                # Format helpers
+│   └── validators/           # Zod schemas
+├── models/                   # Mongoose models (10 models)
+├── hooks/                    # Custom React hooks
+├── scripts/                  # Seed script
+├── auth.config.ts            # Edge-safe auth config
+├── auth.ts                   # Full NextAuth config (Node.js)
+└── middleware.ts              # Route protection + auth middleware
+```
+
+---
+
+## Architecture Notes
+
+### Auth — Edge/Node Split
+
+NextAuth v5 requires two config files because Next.js middleware runs in the Edge Runtime, which cannot execute Node.js code (no `bcrypt`, no `mongoose`):
+
+- **`auth.config.ts`** — Edge-safe. Only JWT callbacks, no DB calls. Used by `middleware.ts`.
+- **`auth.ts`** — Full Node.js. Includes the Credentials provider with bcrypt comparison and Mongoose queries. Used by Server Components and Actions.
+
+### Service Layer
+
+All business logic lives in `lib/services/`. Each service file corresponds to a domain (patients, medications, adherence, alerts, etc.). Services are plain async functions — no classes, no decorators — making them trivially extractable into a NestJS service in a future monorepo migration.
+
+### Adherence Logs
+
+Adherence logs are generated **on-demand** (not via cron) when a patient loads the adherence page. `ensureAdherenceLogsForPatient()` uses `insertMany({ordered: false})` to idempotently create only missing slot records, skipping duplicates silently.
+
+### Alert System
+
+Safety alerts are generated in two places:
+1. **When a medication is logged** — checks for drug-allergy conflicts and drug-drug interactions against the patient's profile and existing medications.
+2. **When a prescription is created** — provider sees a preview of alerts before submitting, with the ability to acknowledge each one.
+
+---
+
+## Future NestJS Migration Path
+
+The service layer is already structured for easy extraction:
+
+1. Create a `apps/api` NestJS workspace alongside `apps/web`
+2. Move `lib/services/*.service.ts` → `apps/api/src/modules/*/`
+3. Move `models/` → `apps/api/src/`
+4. Replace Server Action calls in the Next.js app with `fetch()` calls to the NestJS API
+5. Reuse Zod validators as shared DTOs in a `packages/dto` workspace package
+
+---
+
+## License
+
+MIT
+#   A l e r t R x 
+ 
+ 
