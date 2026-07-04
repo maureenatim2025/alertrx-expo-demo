@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PlusCircle, Trash2, Loader2, FileText, AlertTriangle } from "lucide-react";
+import { PlusCircle, Trash2, Loader2, FileText, AlertTriangle, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -61,6 +61,7 @@ interface PrescriptionFormProps {
 export function PrescriptionForm({ patientId, onSuccess }: PrescriptionFormProps) {
   const [alertPreviews, setAlertPreviews] = useState<AlertPreview[]>([]);
   const [acknowledgeRequired, setAcknowledgeRequired] = useState(false);
+  const [recommendationNote, setRecommendationNote] = useState("");
   const [previewPending, startPreview] = useTransition();
   const [submitPending, startSubmit] = useTransition();
 
@@ -116,8 +117,10 @@ export function PrescriptionForm({ patientId, onSuccess }: PrescriptionFormProps
       setAlertPreviews(previews);
       if (previews.length > 0) {
         setAcknowledgeRequired(true);
+        setRecommendationNote("Urgent review recommended before finalizing this prescription.");
         toast.warning(`${previews.length} alert(s) detected. Please review.`);
       } else {
+        setRecommendationNote("No safety alerts detected. Continue with standard treatment review.");
         toast.success("No safety alerts detected.");
       }
     });
@@ -292,6 +295,14 @@ export function PrescriptionForm({ patientId, onSuccess }: PrescriptionFormProps
             {...register("notes")}
           />
         </div>
+      </div>
+
+      <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+        <div className="flex items-center gap-2">
+          <ShieldCheck className="h-4 w-4 text-primary" />
+          <p className="text-sm font-medium text-primary">Clinician recommendation</p>
+        </div>
+        <p className="mt-2 text-sm text-muted-foreground">{recommendationNote || "Preview alerts to get a structured recommendation before prescribing."}</p>
       </div>
 
       {/* Alert Preview */}
